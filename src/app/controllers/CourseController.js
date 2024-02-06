@@ -8,7 +8,7 @@ class CourseController {
       .then((course) =>
         res.render('courses/show', {course: mongooseToObject(course)})
       )
-      .catch(() => next());
+      .catch((error) => next(error));
   }
 
   // [GET] /create
@@ -21,10 +21,8 @@ class CourseController {
     const course = new Course(req.body);
     course
       .save()
-      .then(() => res.redirect(`/`))
-      .catch((err) => {
-        next(err);
-      });
+      .then(() => res.redirect(`/me/stored/courses`))
+      .catch((error) => next(error));
   }
 
   // [GET] /:id/edit
@@ -33,21 +31,35 @@ class CourseController {
       .then((course) =>
         res.render('courses/edit', {course: mongooseToObject(course)})
       )
-      .catch(() => next());
+      .catch((error) => next(error));
   }
 
   // [PUT] /:id
   update(req, res, next) {
     Course.updateOne({_id: req.params.id}, req.body)
       .then(() => res.redirect('/me/stored/courses'))
-      .catch(next);
+      .catch((error) => next(error));
   }
 
-  // [DELETE] /:id
+  // [DELETE] /:id (Xoá mềm)
   destroy(req, res, next) {
+    Course.delete({_id: req.params.id})
+      .then(() => res.redirect('back'))
+      .catch((error) => next(error));
+  }
+
+  // [PATCH] /:id/restore
+  restore(req, res, next) {
+    Course.restore({_id: req.params.id})
+      .then(() => res.redirect('back'))
+      .catch((error) => next(error));
+  }
+
+  // [DELETE] /:id/force (Xoá thật)
+  forceDestroy(req, res, next) {
     Course.deleteOne({_id: req.params.id})
       .then(() => res.redirect('back'))
-      .catch(next);
+      .catch((error) => next(error));
   }
 }
 
