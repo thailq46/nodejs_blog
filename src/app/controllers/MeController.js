@@ -7,8 +7,11 @@ const Course = require('../models/Course');
 class MeController {
   // [GET] /me/stored/courses
   storedCourses(req, res, next) {
+    const courseQuery = Course.find({}).sortable(req);
+    // res.json(res.locals._sort);
+
     // find({}) nếu không truyền điều kiện gì vào thì sẽ select all documents in database
-    Promise.all([Course.find({}), Course.findDeleted()])
+    Promise.all([courseQuery, Course.findDeleted()])
       .then(([course, deletedCount]) =>
         res.render('me/stored-courses', {
           course: mutipleMongooseToObject(course),

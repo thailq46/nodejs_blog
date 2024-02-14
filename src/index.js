@@ -3,6 +3,8 @@ const path = require('path');
 const morgan = require('morgan');
 const engine = require('express-handlebars');
 const methodOverride = require('method-override');
+const SortMiddleware = require('./app/middlewares/SortMiddleware');
+const hbsHelpers = require('./helpers/hbs-helpers');
 const app = express();
 const port = 3000;
 
@@ -18,15 +20,15 @@ app.use(express.json());
 
 app.use(methodOverride('_method'));
 
+app.use(SortMiddleware);
+
 // Teamplate engine
 app.engine(
   'hbs',
   engine.engine({
     defaultLayout: 'main',
     extname: '.hbs',
-    helpers: {
-      sum: (a, b) => a + b,
-    },
+    helpers: hbsHelpers
   })
 );
 app.set('view engine', 'hbs');
